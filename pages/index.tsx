@@ -172,6 +172,7 @@ const Home: NextPage = (): JSX.Element => {
 
   return (
     <>
+      {/* Main content start */}
       <Box sx={{ width: '100%', height: '100%' }}>
         <Box
           sx={{
@@ -214,6 +215,8 @@ const Home: NextPage = (): JSX.Element => {
           />
         </Box>
       </Box>
+      {/* Main content end */}
+      {/* Popup window start */}
       <Modal
         open={popupWindow}
         onClose={() => setPopupWindow(false)}
@@ -237,6 +240,7 @@ const Home: NextPage = (): JSX.Element => {
           </Typography>
         </Box>
       </Modal>
+      {/* Popup window end */}
     </>
   )
 }
