@@ -51,7 +51,7 @@ const columns: GridColDef[] = [
     field: 'title',
     headerName: '標題',
     sortable: false,
-    minWidth: 300,
+    flex: 1,
     headerAlign: 'center',
     align: 'center',
     renderCell: params => (
@@ -73,6 +73,7 @@ const columns: GridColDef[] = [
   {
     field: 'publishedAt',
     headerName: '發布日期',
+    minWidth: 200,
     headerAlign: 'center',
     align: 'center'
   },
@@ -123,27 +124,32 @@ const Home: NextPage = (): JSX.Element => {
         const idList = videosOverview.items.map(item => item.id.videoId) // get videos id list
         const { data: videosDetail } = await GetVideosDetail(idList)
 
-        // arrange new video list
-        const videoList: IVideo[] = videosOverview.items.map(videoOverview => {
-          const videoDetail = videosDetail.items.find(
-            videoDetail => videoDetail.id === videoOverview.id.videoId
+        // arrange new video list and sort by publishedAt
+        const videoList: IVideo[] = videosOverview.items
+          .map(videoOverview => {
+            const videoDetail = videosDetail.items.find(
+              videoDetail => videoDetail.id === videoOverview.id.videoId
+            )
+            return {
+              id: videoOverview.id.videoId,
+              thumbnail: {
+                url: videoOverview.snippet.thumbnails.default.url,
+                videoId: videoOverview.id.videoId
+              },
+              title: videoOverview.snippet.title,
+              duration: ConvertTimestampToString(
+                ConvertDurationToTimestamp(videoDetail.contentDetails.duration)
+              ),
+              publishedAt: videoOverview.snippet.publishedAt,
+              viewCount: Number(videoDetail.statistics.viewCount),
+              likeCount: Number(videoDetail.statistics.likeCount),
+              commentCount: Number(videoDetail.statistics.commentCount)
+            }
+          })
+          .sort(
+            (prev, next) =>
+              Date.parse(next.publishedAt) - Date.parse(prev.publishedAt)
           )
-          return {
-            id: videoOverview.id.videoId,
-            thumbnail: {
-              url: videoOverview.snippet.thumbnails.default.url,
-              videoId: videoOverview.id.videoId
-            },
-            title: videoOverview.snippet.title,
-            duration: ConvertTimestampToString(
-              ConvertDurationToTimestamp(videoDetail.contentDetails.duration)
-            ),
-            publishedAt: videoOverview.snippet.publishedAt,
-            viewCount: Number(videoDetail.statistics.viewCount),
-            likeCount: Number(videoDetail.statistics.likeCount),
-            commentCount: Number(videoDetail.statistics.commentCount)
-          }
-        })
         setVideoList(list => [...list, videoList])
         nextPageToken.current = videosOverview.nextPageToken // set new nextPageToken
       } catch (error) {
