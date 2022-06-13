@@ -50,6 +50,7 @@ const columns: GridColDef[] = [
   {
     field: 'title',
     headerName: '標題',
+    minWidth: 200,
     sortable: false,
     flex: 1,
     headerAlign: 'center',
